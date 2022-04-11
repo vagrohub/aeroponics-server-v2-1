@@ -127,7 +127,7 @@ const stopCurrentExperiment = async (req, res) => {
                     ]
                 }
             ]);
-        const device = deviceList.find(device => device._id === req.body.id)
+        const device = deviceList.find(device => device._id.toString() === req.body.id)
 
         if (!device) {
             return res.status(400).send({
@@ -167,7 +167,7 @@ const getDeviceDataById = async (req, res) => {
                     ]
                 }
             ]);
-        const device = deviceList.find(device => device._id === req.query.id)
+        const device = deviceList.find(device => device._id.toString() === req.query.id)
 
         if (!device) {
             return res.status(400).send({
@@ -196,7 +196,8 @@ const edditDescriptionDevice = async (req, res) => {
                     model: 'Device'
                 }
             ]);
-        const device = deviceList.find(device => device._id === req.body.id);
+
+        const device = deviceList.find(device => device._id.toString() === req.body.id);
 
         if (!device) {
             return res.status(400).send({
