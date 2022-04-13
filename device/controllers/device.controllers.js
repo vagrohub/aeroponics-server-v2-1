@@ -135,7 +135,7 @@ const stopCurrentExperiment = async (req, res) => {
             });
         }
 
-        const newId = await createNewExperiment(req.body.title, reg.body.description);
+        const newId = await createNewExperiment(req.body.title, req.body.description);
 
         await device.stopCurrentExperiment(newId);
         return res.send({ status: true });
