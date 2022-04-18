@@ -1,14 +1,16 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import execMessageFromError from '../../utils/execMessageFromError.utils.js';
+import generatePassword from '../../utils/generatePassword.js';
 import {
     USER_IS_REGISTERED,
     FAILED_REGISTERED,
     USER_IS_NOT_REGISTERED,
     INVALID_PASSWORD,
     FAILED_LOGIN
-} from '../../constants/error.constants';
-import { bcryptSaltRounds, secretKey } from '../../app.config.js';
+} from '../../constants/error.constants.js';
+import { bcryptSaltRounds, secretKey, gmailUser, gmailPass } from '../../app.config.js';
 import User from '../../user/model/user.model.js';
 
 const generateAccessToken = (id) => {
@@ -62,7 +64,43 @@ const login = async (req, res) => {
     }
 };
 
+const recoveryPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        const newPassword = generatePassword(8);
+
+        if (!user) {
+            return res.status(400).send({ error: USER_IS_NOT_REGISTERED });
+        }
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: gmailUser,
+                pass: gmailPass,
+            },
+        })
+    
+        await transporter.sendMail({
+            from: '"Аэропоника" <vgshalabs@gmail.com>',
+            to: email,
+            subject: 'Новый пароль',
+            text: `Ваш новый пароль: '${newPassword}'`
+        })
+
+        await user.edditPassword(bcrypt.hashSync(newPassword, bcryptSaltRounds))
+
+        return res.send({ status: true })
+    } catch (error) {
+        return res.status(503).send({
+            error: execMessageFromError(error, FAILED_RECOVERY_PASSWORD)
+        });
+    }
+}
+
 export {
     registration,
-    login
+    login,
+    recoveryPassword
 }

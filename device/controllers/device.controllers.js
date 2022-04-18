@@ -13,7 +13,7 @@ import {
     FAILED_STOP_EXP,
     FAILED_GET_DEVICE,
     FAILED_EDDIT_DEVICE_DESCRIPTION,
-} from '../../constants/error.constants';
+} from '../../constants/error.constants.js';
 
 const getDeviceList = async (req, res) => {
     try {

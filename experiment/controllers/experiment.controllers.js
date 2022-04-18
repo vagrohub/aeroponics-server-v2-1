@@ -7,7 +7,7 @@ import {
     FAILED_EDDIT_EXP_TITLE,
     FAILED_EDDIT_EXP_DESCRIPTION,
     FAILED_RECORD_MEASUREMENTS,
-} from '../../constants/error.constants';
+} from '../../constants/error.constants.js';
 
 const getExperimentById = async (req, res) => {
     try {

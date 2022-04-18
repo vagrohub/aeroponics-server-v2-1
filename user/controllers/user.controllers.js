@@ -5,7 +5,7 @@ import {
     ERROR_SEREVER,
     FAILED_CHANGE_USER_PASSWORD,
     FAILED_CHANGE_USER_NAME
-} from '../../constants/error.constants';
+} from '../../constants/error.constants.js';
 
 const getUserData = async (req, res) => {
     try {
