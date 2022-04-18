@@ -1,6 +1,13 @@
 import Experiment from '../model/experiment.model.js';
 import { experimentWithSpecifiedIdNotExist } from '../utils/controllers.utils.js';
 import execMessageFromError from '../../utils/execMessageFromError.utils.js';
+import {
+    FAILED_GET_EXP,
+    FAILED_CREATE_EXP,
+    FAILED_EDDIT_EXP_TITLE,
+    FAILED_EDDIT_EXP_DESCRIPTION,
+    FAILED_RECORD_MEASUREMENTS,
+} from '../../constants/error.constants';
 
 const getExperimentById = async (req, res) => {
     try {
@@ -13,7 +20,7 @@ const getExperimentById = async (req, res) => {
         return res.status(200).send({ experiment });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to get experiment')
+            error: execMessageFromError(error, FAILED_GET_EXP)
         });
     }
 };
@@ -47,7 +54,7 @@ const getExperimentListByDeviceId = async (req, res) => {
         });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to get experiment')
+            error: execMessageFromError(error, FAILED_GET_EXP)
         });
     }
 };
@@ -61,7 +68,7 @@ const createNewExperiment = async (req, res) => {
         return res.status(200).send({ id: experiment._id });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to create experiment')
+            error: execMessageFromError(error, FAILED_CREATE_EXP)
         })
     }
 };
@@ -78,7 +85,7 @@ const edditTitleExperiment = async (req, res) => {
         return res.status(200).send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to change title')
+            error: execMessageFromError(error, FAILED_EDDIT_EXP_TITLE)
         });
     }
 };
@@ -95,7 +102,7 @@ const edditDescriptionExperiment = async (req, res) => {
         return res.status(200).send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Could not change description')
+            error: execMessageFromError(error, FAILED_EDDIT_EXP_DESCRIPTION)
         });
     }
 };
@@ -112,7 +119,7 @@ const pushMeasurementExperiment = async (req, res) => {
         return res.status(200).send({ experiment });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to record measurements')
+            error: execMessageFromError(error, FAILED_RECORD_MEASUREMENTS)
         });
     }
 };

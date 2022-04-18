@@ -3,6 +3,17 @@ import { bcryptSaltRounds } from '../../app.config.js';
 import { createNewExperiment, excludeSensitiveData } from '../utils/controllers.utils.js';
 import bcrypt from 'bcrypt';
 import execMessageFromError from '../../utils/execMessageFromError.utils.js';
+import {
+    FAILED_GET_DEVICE_LIST,
+    NAME_DEVICE_ALREDADY,
+    FAILED_CREATE_DEVICE,
+    DEVICE_NOT_INIT,
+    LOGIN_PASSWORD_NOT_MATCH,
+    FAILED_DATA_WRITE,
+    FAILED_STOP_EXP,
+    FAILED_GET_DEVICE,
+    FAILED_EDDIT_DEVICE_DESCRIPTION,
+} from '../../constants/error.constants';
 
 const getDeviceList = async (req, res) => {
     try {
@@ -31,7 +42,7 @@ const getDeviceList = async (req, res) => {
         return res.send({ devices: deviceList });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to get device list')
+            error: execMessageFromError(error, FAILED_GET_DEVICE_LIST)
         });
     }
 };
@@ -44,7 +55,7 @@ const initNewDevice = async (req, res) => {
 
         if (condidate) {
             return res.status(400).send({
-                error: `A device named ${req.body.name} already exists`
+                error: NAME_DEVICE_ALREDADY
             });
         }
 
@@ -67,7 +78,7 @@ const initNewDevice = async (req, res) => {
         return res.send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to create device')
+            error: execMessageFromError(error, FAILED_CREATE_DEVICE)
         });
     }
 };
@@ -85,13 +96,13 @@ const pushMeasurement = async (req, res) => {
 
         if (!device) {
             return res.status(400).send({
-                error: `Device is not init`
+                error: DEVICE_NOT_INIT
             });
         }
 
         if (!bcrypt.compareSync(req.body.password, device.password)) {
             return res.status(400).send({
-                error: `Login and password do not match`
+                error: LOGIN_PASSWORD_NOT_MATCH
             });
         }
 
@@ -103,7 +114,7 @@ const pushMeasurement = async (req, res) => {
         return res.send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Data write error')
+            error: execMessageFromError(error, FAILED_DATA_WRITE)
         });
     }
 };
@@ -131,7 +142,7 @@ const stopCurrentExperiment = async (req, res) => {
 
         if (!device) {
             return res.status(400).send({
-                error: `Device is not init`
+                error: DEVICE_NOT_INIT
             });
         }
 
@@ -143,7 +154,7 @@ const stopCurrentExperiment = async (req, res) => {
         return res
             .status(503)
             .send({
-                error: execMessageFromError(error, 'Failed to complete experiment')
+                error: execMessageFromError(error, FAILED_STOP_EXP)
             });
     }
 };
@@ -182,7 +193,7 @@ const getDeviceDataById = async (req, res) => {
         return res
             .status(503)
             .send({
-                error: execMessageFromError(error, 'Error getting device')
+                error: execMessageFromError(error, FAILED_GET_DEVICE)
             });
     }
 };
@@ -201,7 +212,7 @@ const edditDescriptionDevice = async (req, res) => {
 
         if (!device) {
             return res.status(400).send({
-                error: `Device is not init`
+                error: DEVICE_NOT_INIT
             });
         }
 
@@ -211,7 +222,7 @@ const edditDescriptionDevice = async (req, res) => {
         return res
             .status(503)
             .send({
-                error: execMessageFromError(error, 'Description change error')
+                error: execMessageFromError(error, FAILED_EDDIT_DEVICE_DESCRIPTION)
             });
     }
 }

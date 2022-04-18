@@ -1,7 +1,13 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import execMessageFromError from '../../utils/execMessageFromError.utils.js';
+import {
+    USER_IS_REGISTERED,
+    FAILED_REGISTERED,
+    USER_IS_NOT_REGISTERED,
+    INVALID_PASSWORD,
+    FAILED_LOGIN
+} from '../../constants/error.constants';
 import { bcryptSaltRounds, secretKey } from '../../app.config.js';
 import User from '../../user/model/user.model.js';
 
@@ -15,7 +21,7 @@ const registration = async (req, res) => {
         const condidate = await User.findOne({ email });
 
         if (condidate) {
-            return res.status(400).send({ error: `User already registered` });
+            return res.status(400).send({ error: USER_IS_REGISTERED });
         }
 
         const user = new User({
@@ -29,7 +35,7 @@ const registration = async (req, res) => {
         return res.send({ token: generateAccessToken(user._id) });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to register user')
+            error: execMessageFromError(error, FAILED_REGISTERED)
         });
     }
 };
@@ -40,18 +46,18 @@ const login = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(400).send({ error: 'User not registered' });
+            return res.status(400).send({ error: USER_IS_NOT_REGISTERED });
         }
 
         const isValid = bcrypt.compareSync(password, user.password);
         if (!isValid) {
-            return res.status(400).send({ error: 'Invalid password' });
+            return res.status(400).send({ error: INVALID_PASSWORD });
         }
 
         return res.send({ token: generateAccessToken(user._id) });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to login')
+            error: execMessageFromError(error, FAILED_LOGIN)
         });
     }
 };

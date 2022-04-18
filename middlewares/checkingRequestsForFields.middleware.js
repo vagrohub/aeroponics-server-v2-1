@@ -7,7 +7,7 @@ const  checkingRequestsForFields = (field, ...propertys) => (req, res, next) => 
         return res
             .status(400)
             .send({
-                error: `could not find ${field}`
+                error: `Не найдено поле: ${field}`
             });
     }
 
@@ -26,7 +26,7 @@ const  checkingRequestsForFields = (field, ...propertys) => (req, res, next) => 
     return res
         .status(400)
         .send({
-            error: `could not find ${missingFields.join(', ')} in ${field}`
+            error: `Не удалось найти поля ${missingFields.join(', ')} в ${field}`
         });
 };
 
