@@ -14,6 +14,7 @@ import {
     FAILED_GET_DEVICE,
     FAILED_EDDIT_DEVICE_DESCRIPTION,
 } from '../../constants/error.constants.js';
+import { parserDateFromMicrocontroller } from '../../utils/date.js';
 
 const getDeviceList = async (req, res) => {
     try {
@@ -107,9 +108,12 @@ const pushMeasurement = async (req, res) => {
         }
 
         for await (const measurement of req.body.measurements) {
+            measurement.date = parserDateFromMicrocontroller(measurement.data);
             await device.currentExperiment.pushMeasurement(measurement);
         }
-        await device.currentExperiment.assignLatestUpdate(req.body.date);
+        await device.currentExperiment.assignLatestUpdate(
+            parserDateFromMicrocontroller(req.body.date)
+        );
 
         return res.send({ status: true });
     } catch (error) {
