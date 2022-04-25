@@ -44,6 +44,7 @@ const registration = async (req, res) => {
 
 const login = async (req, res) => {
     try {
+        console.log('new connect');
         const { password, email } = req.body;
         const user = await User.findOne({ email });
 
