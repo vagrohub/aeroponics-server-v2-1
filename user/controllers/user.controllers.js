@@ -1,6 +1,11 @@
 import bcrypt from 'bcrypt';
 import { bcryptSaltRounds } from '../../app.config.js';
 import execMessageFromError from '../../utils/execMessageFromError.utils.js';
+import {
+    ERROR_SEREVER,
+    FAILED_CHANGE_USER_PASSWORD,
+    FAILED_CHANGE_USER_NAME
+} from '../../constants/error.constants.js';
 
 const getUserData = async (req, res) => {
     try {
@@ -14,7 +19,7 @@ const getUserData = async (req, res) => {
         });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Server error')
+            error: execMessageFromError(error, ERROR_SEREVER)
         });
     }
 };
@@ -42,7 +47,7 @@ const getFullUserData = async (req, res) => {
         });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Server error')
+            error: execMessageFromError(error, ERROR_SEREVER)
         });
     }
 };
@@ -58,7 +63,7 @@ const edditUserPassword = async (req, res) => {
         return res.send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to change password')
+            error: execMessageFromError(error, FAILED_CHANGE_USER_PASSWORD)
         });
     }
 };
@@ -72,7 +77,7 @@ const edditUsername = async () => {
         return res.send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to change username')
+            error: execMessageFromError(error, FAILED_CHANGE_USER_NAME)
         })
     }
 };

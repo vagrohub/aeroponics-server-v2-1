@@ -3,6 +3,18 @@ import { bcryptSaltRounds } from '../../app.config.js';
 import { createNewExperiment, excludeSensitiveData } from '../utils/controllers.utils.js';
 import bcrypt from 'bcrypt';
 import execMessageFromError from '../../utils/execMessageFromError.utils.js';
+import {
+    FAILED_GET_DEVICE_LIST,
+    NAME_DEVICE_ALREDADY,
+    FAILED_CREATE_DEVICE,
+    DEVICE_NOT_INIT,
+    LOGIN_PASSWORD_NOT_MATCH,
+    FAILED_DATA_WRITE,
+    FAILED_STOP_EXP,
+    FAILED_GET_DEVICE,
+    FAILED_EDDIT_DEVICE_DESCRIPTION,
+} from '../../constants/error.constants.js';
+import { parserDateFromMicrocontroller } from '../../utils/date.js';
 
 const getDeviceList = async (req, res) => {
     try {
@@ -31,7 +43,7 @@ const getDeviceList = async (req, res) => {
         return res.send({ devices: deviceList });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to get device list')
+            error: execMessageFromError(error, FAILED_GET_DEVICE_LIST)
         });
     }
 };
@@ -44,7 +56,7 @@ const initNewDevice = async (req, res) => {
 
         if (condidate) {
             return res.status(400).send({
-                error: `A device named ${req.body.name} already exists`
+                error: NAME_DEVICE_ALREDADY
             });
         }
 
@@ -67,7 +79,7 @@ const initNewDevice = async (req, res) => {
         return res.send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Failed to create device')
+            error: execMessageFromError(error, FAILED_CREATE_DEVICE)
         });
     }
 };
@@ -85,25 +97,28 @@ const pushMeasurement = async (req, res) => {
 
         if (!device) {
             return res.status(400).send({
-                error: `Device is not init`
+                error: DEVICE_NOT_INIT
             });
         }
 
         if (!bcrypt.compareSync(req.body.password, device.password)) {
             return res.status(400).send({
-                error: `Login and password do not match`
+                error: LOGIN_PASSWORD_NOT_MATCH
             });
         }
 
         for await (const measurement of req.body.measurements) {
+            measurement.date = parserDateFromMicrocontroller(measurement.data);
             await device.currentExperiment.pushMeasurement(measurement);
         }
-        await device.currentExperiment.assignLatestUpdate(req.body.date);
+        await device.currentExperiment.assignLatestUpdate(
+            parserDateFromMicrocontroller(req.body.date)
+        );
 
         return res.send({ status: true });
     } catch (error) {
         return res.status(503).send({
-            error: execMessageFromError(error, 'Data write error')
+            error: execMessageFromError(error, FAILED_DATA_WRITE)
         });
     }
 };
@@ -127,15 +142,15 @@ const stopCurrentExperiment = async (req, res) => {
                     ]
                 }
             ]);
-        const device = deviceList.find(device => device._id === req.body.id)
+        const device = deviceList.find(device => device._id.toString() === req.body.id)
 
         if (!device) {
             return res.status(400).send({
-                error: `Device is not init`
+                error: DEVICE_NOT_INIT
             });
         }
 
-        const newId = await createNewExperiment(req.body.title, reg.body.description);
+        const newId = await createNewExperiment(req.body.title, req.body.description);
 
         await device.stopCurrentExperiment(newId);
         return res.send({ status: true });
@@ -143,7 +158,7 @@ const stopCurrentExperiment = async (req, res) => {
         return res
             .status(503)
             .send({
-                error: execMessageFromError(error, 'Failed to complete experiment')
+                error: execMessageFromError(error, FAILED_STOP_EXP)
             });
     }
 };
@@ -167,7 +182,7 @@ const getDeviceDataById = async (req, res) => {
                     ]
                 }
             ]);
-        const device = deviceList.find(device => device._id === req.query.id)
+        const device = deviceList.find(device => device._id.toString() === req.query.id)
 
         if (!device) {
             return res.status(400).send({
@@ -182,7 +197,7 @@ const getDeviceDataById = async (req, res) => {
         return res
             .status(503)
             .send({
-                error: execMessageFromError(error, 'Error getting device')
+                error: execMessageFromError(error, FAILED_GET_DEVICE)
             });
     }
 };
@@ -196,11 +211,12 @@ const edditDescriptionDevice = async (req, res) => {
                     model: 'Device'
                 }
             ]);
-        const device = deviceList.find(device => device._id === req.body.id);
+
+        const device = deviceList.find(device => device._id.toString() === req.body.id);
 
         if (!device) {
             return res.status(400).send({
-                error: `Device is not init`
+                error: DEVICE_NOT_INIT
             });
         }
 
@@ -210,7 +226,7 @@ const edditDescriptionDevice = async (req, res) => {
         return res
             .status(503)
             .send({
-                error: execMessageFromError(error, 'Description change error')
+                error: execMessageFromError(error, FAILED_EDDIT_DEVICE_DESCRIPTION)
             });
     }
 }

@@ -26,7 +26,7 @@ app.use('/user', userRoutes);
 const start = async () => {
     try {
         await mongoose.connect(
-            'mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.3.1/aeroponics'
+            'mongodb://127.0.0.1:27017/aeroponics'
         );
         app.listen(
             3000,
