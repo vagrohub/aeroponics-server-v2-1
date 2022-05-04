@@ -116,6 +116,7 @@ const getExcelBuffer = async (req, res) => {
             return experimentWithSpecifiedIdNotExist(req, res);
         }
 
+        return res.set('Content-Type', 'multipart/form-data');
         return res.status(200).send({ excelBuffer: xlsxBuild(experiment) });
     } catch (error) {
         return res.status(503).send({
