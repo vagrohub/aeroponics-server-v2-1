@@ -7,7 +7,8 @@ import {
     edditTitleExperiment,
     edditDescriptionExperiment,
     pushMeasurementExperiment,
-    getExperimentListByDeviceId
+    getExperimentListByDeviceId,
+    getExcelBuffer
 } from './controllers/experiment.controllers.js';
 
 
@@ -31,6 +32,16 @@ router.get(
         checkingRequestsForFields('query', 'name')
     ],
     getExperimentListByDeviceId
+);
+
+// Получить данные об эксперименте буффером
+router.get(
+    '/excel-buffer',
+    [
+        checkingAuthenticate(),
+        checkingRequestsForFields('query', 'id')
+    ],
+    getExcelBuffer
 );
 
 // Создать новый экспреимент
