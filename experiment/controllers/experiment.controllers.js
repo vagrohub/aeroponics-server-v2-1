@@ -8,6 +8,7 @@ import {
     FAILED_EDDIT_EXP_DESCRIPTION,
     FAILED_RECORD_MEASUREMENTS,
 } from '../../constants/error.constants.js';
+import xlsxBuild from '../utils/xlsxBuild.js';
 
 const getExperimentById = async (req, res) => {
     try {
@@ -107,6 +108,22 @@ const edditDescriptionExperiment = async (req, res) => {
     }
 };
 
+const getExcelBuffer = async (req, res) => {
+    try {
+        const experiment = await Experiment.findById(req.query.id);
+
+        if (!experiment) {
+            return experimentWithSpecifiedIdNotExist(req, res);
+        }
+
+        return res.status(200).send({ excelBuffer: xlsxBuild(experiment) });
+    } catch (error) {
+        return res.status(503).send({
+            error: execMessageFromError(error, FAILED_GET_EXP)
+        });
+    }
+};
+
 const pushMeasurementExperiment = async (req, res) => {
     try {
         const experiment = await Experiment.findById(req.body.id);
@@ -130,5 +147,6 @@ export {
     edditTitleExperiment,
     edditDescriptionExperiment,
     pushMeasurementExperiment,
-    getExperimentListByDeviceId
+    getExperimentListByDeviceId,
+    getExcelBuffer
 }
