@@ -8,7 +8,8 @@ import {
     FAILED_REGISTERED,
     USER_IS_NOT_REGISTERED,
     INVALID_PASSWORD,
-    FAILED_LOGIN
+    FAILED_LOGIN,
+    FAILED_RECOVERY_PASSWORD
 } from '../../constants/error.constants.js';
 import { bcryptSaltRounds, secretKey, gmailUser, gmailPass } from '../../app.config.js';
 import User from '../../user/model/user.model.js';

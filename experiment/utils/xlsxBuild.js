@@ -1,19 +1,31 @@
 import xlsx from 'node-xlsx';
 
+const EXEL_HEADER = [
+    'danger',
+    'tempRoom',
+    'tempWater', 
+    'lightSensor',
+    'lightWorkingTime',
+    'lightOffTime',
+    'pumpTime',
+    'pumpSleep',
+    'date',
+];
+
 const getFormattedDataFromExperimentForExel = (experiment) => {
-    const header = Object.keys(experiment.measurements[0]);
     const body = experiment.measurements.map(measurement => {
-        return header.map(key => measurement[key])
+        return EXEL_HEADER.map(key => measurement[key])
     });
 
     return [
-        header,
+        EXEL_HEADER,
         ...body
     ]
 }
 
 const xlsxBuild = (experiment) => {
     const data = getFormattedDataFromExperimentForExel(experiment);
+
     const sheetOptions = {
         '!cols': Array(data[0].length).fill({ wch: 20 })
     };
